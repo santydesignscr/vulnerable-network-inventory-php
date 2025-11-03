@@ -27,6 +27,11 @@ ob_start();
         <a href="<?= $app->getBaseUrl() ?>/configs/<?= $config['id'] ?>/download" class="btn btn-success">
             <i class="bi bi-download"></i> Download
         </a>
+        <?php if ($app->hasRole('operator')): ?>
+        <a href="<?= $app->getBaseUrl() ?>/configs/<?= $config['id'] ?>/edit" class="btn btn-primary">
+            <i class="bi bi-pencil"></i> Edit
+        </a>
+        <?php endif; ?>
         <a href="<?= $app->getBaseUrl() ?>/devices/<?= $config['device_id'] ?>" class="btn btn-secondary">
             <i class="bi bi-arrow-left"></i> Back to Device
         </a>
@@ -100,6 +105,9 @@ ob_start();
                         <i class="bi bi-download"></i> Download
                     </a>
                     <?php if ($app->hasRole('operator')): ?>
+                    <a href="<?= $app->getBaseUrl() ?>/configs/<?= $config['id'] ?>/edit" class="btn btn-sm btn-primary">
+                        <i class="bi bi-pencil"></i> Edit
+                    </a>
                     <button class="btn btn-sm btn-danger" onclick="if(confirm('Delete this configuration?')) deleteConfig(<?= $config['id'] ?>)">
                         <i class="bi bi-trash"></i> Delete
                     </button>

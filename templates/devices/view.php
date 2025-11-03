@@ -157,6 +157,15 @@ ob_start();
     <!-- Interfaces Tab -->
     <div class="tab-pane fade show active" id="interfaces" role="tabpanel">
         <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Network Interfaces</h5>
+                <?php if ($app->hasRole('operator')): ?>
+                <a href="/net-inventory/public/interfaces/create/<?= $device['id'] ?>" 
+                   class="btn btn-sm btn-primary">
+                    <i class="bi bi-plus-circle"></i> Add Interface
+                </a>
+                <?php endif; ?>
+            </div>
             <div class="card-body">
                 <?php if (empty($interfaces)): ?>
                 <p class="text-muted">No interfaces registered for this device.</p>
@@ -171,6 +180,9 @@ ob_start();
                                 <th>IP Address</th>
                                 <th>Admin Status</th>
                                 <th>Oper Status</th>
+                                <?php if ($app->hasRole('operator')): ?>
+                                <th class="text-end">Actions</th>
+                                <?php endif; ?>
                             </tr>
                         </thead>
                         <tbody>
@@ -190,6 +202,23 @@ ob_start();
                                         <?= htmlspecialchars($iface['oper_status']) ?>
                                     </span>
                                 </td>
+                                <?php if ($app->hasRole('operator')): ?>
+                                <td class="text-end">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a href="/net-inventory/public/interfaces/<?= $iface['id'] ?>/edit" 
+                                           class="btn btn-outline-primary" 
+                                           title="Edit Interface">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <button type="button" 
+                                                class="btn btn-outline-danger" 
+                                                onclick="deleteInterface(<?= $iface['id'] ?>, '<?= htmlspecialchars($iface['name'], ENT_QUOTES) ?>')"
+                                                title="Delete Interface">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                                <?php endif; ?>
                             </tr>
                             <?php endforeach; ?>
                         </tbody>
@@ -285,6 +314,9 @@ ob_start();
                                     <i class="bi bi-download"></i> Download
                                 </a>
                                 <?php if ($app->hasRole('operator')): ?>
+                                <a href="<?= $app->getBaseUrl() ?>/configs/<?= $config['id'] ?>/edit" class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-pencil"></i> Edit
+                                </a>
                                 <button class="btn btn-sm btn-outline-danger" onclick="if(confirm('Delete config?')) deleteConfig(<?= $config['id'] ?>)">
                                     <i class="bi bi-trash"></i>
                                 </button>
@@ -394,7 +426,7 @@ ob_start();
 
 <!-- Upload Configuration Modal -->
 <div class="modal fade" id="uploadModal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Upload Configuration</h5>
@@ -402,18 +434,61 @@ ob_start();
             </div>
             <form method="POST" action="<?= $app->getBaseUrl() ?>/configs/upload/<?= $device['id'] ?>" enctype="multipart/form-data">
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Configuration File</label>
-                        <input type="file" class="form-control" name="config_file" accept=".txt,.cfg,.conf,.log">
+                    <!-- Tab Navigation -->
+                    <ul class="nav nav-tabs mb-3" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="file-tab" data-bs-toggle="tab" data-bs-target="#file-upload" type="button">
+                                <i class="bi bi-cloud-upload"></i> Upload File
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="text-tab" data-bs-toggle="tab" data-bs-target="#text-input" type="button">
+                                <i class="bi bi-file-text"></i> Paste Text
+                            </button>
+                        </li>
+                    </ul>
+
+                    <!-- Tab Content -->
+                    <div class="tab-content">
+                        <!-- File Upload Tab -->
+                        <div class="tab-pane fade show active" id="file-upload" role="tabpanel">
+                            <div class="mb-3">
+                                <label class="form-label">Configuration File</label>
+                                <input type="file" class="form-control" name="config_file" accept=".txt,.cfg,.conf,.log">
+                                <small class="text-muted">
+                                    Supported formats: .txt, .cfg, .conf, .log
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- Text Input Tab -->
+                        <div class="tab-pane fade" id="text-input" role="tabpanel">
+                            <div class="mb-3">
+                                <label class="form-label">Filename</label>
+                                <input type="text" class="form-control" name="filename" placeholder="e.g., running-config.txt">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Configuration Content</label>
+                                <textarea class="form-control font-monospace" 
+                                          name="config_content" 
+                                          rows="10" 
+                                          style="font-size: 13px;"
+                                          placeholder="Paste configuration content here..."></textarea>
+                            </div>
+                        </div>
                     </div>
+
+                    <!-- Notes (common for both methods) -->
                     <div class="mb-3">
-                        <label class="form-label">Notes</label>
-                        <textarea class="form-control" name="notes" rows="3"></textarea>
+                        <label class="form-label">Notes (Optional)</label>
+                        <textarea class="form-control" name="notes" rows="2" placeholder="Add notes about this configuration..."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Upload</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-upload"></i> Upload Configuration
+                    </button>
                 </div>
             </form>
         </div>
@@ -443,6 +518,16 @@ function deleteIpAssignment(id) {
     }).then(() => {
         window.location.reload();
     });
+}
+
+function deleteInterface(id, name) {
+    if (confirm('Are you sure you want to delete interface "' + name + '"?')) {
+        fetch('/net-inventory/public/interfaces/' + id + '/delete', {
+            method: 'POST'
+        }).then(() => {
+            window.location.reload();
+        });
+    }
 }
 </script>
 

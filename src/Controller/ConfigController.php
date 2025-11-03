@@ -202,6 +202,101 @@ class ConfigController
     }
     
     /**
+     * Show edit configuration form
+     * VULNERABLE: SQL Injection via config ID
+     */
+    public function edit($id)
+    {
+        if (!$this->app->hasRole('operator')) {
+            die("Access denied");
+        }
+        
+        // VULNERABLE: No input validation
+        $query = "SELECT c.*, 
+                         d.hostname,
+                         d.id as device_id,
+                         u.username as uploaded_by_name
+                  FROM configs c
+                  LEFT JOIN devices d ON c.device_id = d.id
+                  LEFT JOIN users u ON c.uploaded_by = u.id
+                  WHERE c.id = {$id}";
+        
+        try {
+            $config = $this->db->query($query)->fetch();
+            
+            if (!$config) {
+                die("Configuration not found");
+            }
+            
+            echo $this->app->render('configs/edit.php', [
+                'config' => $config
+            ]);
+            
+        } catch (\PDOException $e) {
+            if ($this->app->getConfig('debug')) {
+                die("SQL Error: " . $e->getMessage() . "<br>Query: " . $query);
+            }
+            die("Error loading configuration");
+        }
+    }
+    
+    /**
+     * Update configuration
+     * VULNERABLE: SQL Injection in UPDATE statement
+     */
+    public function update($id)
+    {
+        if (!$this->app->hasRole('operator')) {
+            die("Access denied");
+        }
+        
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->app->redirect("configs/{$id}/edit");
+        }
+        
+        // Get device_id first (also vulnerable)
+        $deviceQuery = "SELECT device_id FROM configs WHERE id = {$id}";
+        $result = $this->db->query($deviceQuery)->fetch();
+        
+        if (!$result) {
+            die("Configuration not found");
+        }
+        
+        $deviceId = $result['device_id'];
+        
+        // VULNERABLE: No input validation
+        $filename = $_POST['filename'] ?? '';
+        $content = addslashes($_POST['content'] ?? '');
+        $notes = $_POST['notes'] ?? '';
+        
+        // VULNERABLE: SQL Injection in UPDATE
+        $query = "UPDATE configs SET 
+                  filename = '{$filename}',
+                  content = '{$content}',
+                  notes = '{$notes}'
+                  WHERE id = {$id}";
+        
+        try {
+            $this->db->exec($query);
+            
+            // Log the action (also vulnerable)
+            $userId = $this->app->getCurrentUser()['id'];
+            $logQuery = "INSERT INTO change_log (device_id, user_id, action, details) 
+                        VALUES ({$deviceId}, {$userId}, 'update-config', 
+                        '{\"config_id\":{$id},\"filename\":\"{$filename}\"}')";
+            $this->db->exec($logQuery);
+            
+            $this->app->redirect("configs/{$id}");
+            
+        } catch (\PDOException $e) {
+            if ($this->app->getConfig('debug')) {
+                die("SQL Error: " . $e->getMessage() . "<br>Query: " . $query);
+            }
+            die("Error updating configuration");
+        }
+    }
+    
+    /**
      * Compare two configurations
      * VULNERABLE: SQL Injection via both config IDs
      */

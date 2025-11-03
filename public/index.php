@@ -66,6 +66,8 @@ $router->get('/devices/export', 'DeviceController@export');
 $router->get('/configs/:id', 'ConfigController@view');
 $router->post('/configs/upload/:deviceId', 'ConfigController@upload');
 $router->get('/configs/:id/download', 'ConfigController@download');
+$router->get('/configs/:id/edit', 'ConfigController@edit');
+$router->post('/configs/:id/edit', 'ConfigController@update');
 $router->post('/configs/:id/delete', 'ConfigController@delete');
 $router->get('/configs/compare', 'ConfigController@compare');
 
@@ -74,6 +76,13 @@ $router->get('/ip', 'IpController@index');
 $router->post('/ip/assign', 'IpController@assign');
 $router->post('/ip/:id/delete', 'IpController@delete');
 $router->get('/ip/check', 'IpController@checkAvailability');
+
+// Interfaces
+$router->get('/interfaces/create/:deviceId', 'InterfaceController@create');
+$router->post('/interfaces/create/:deviceId', 'InterfaceController@store');
+$router->get('/interfaces/:id/edit', 'InterfaceController@edit');
+$router->post('/interfaces/:id/edit', 'InterfaceController@update');
+$router->post('/interfaces/:id/delete', 'InterfaceController@delete');
 
 // Search
 $router->get('/search', function() use ($app) {
