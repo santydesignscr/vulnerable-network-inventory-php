@@ -1,0 +1,47 @@
+# Environment files
+.env
+.env.local
+.env.production
+
+# Composer
+/vendor/
+composer.phar
+composer.lock
+
+# Uploads
+/public/uploads/*
+!/public/uploads/.gitkeep
+
+# Logs
+*.log
+/logs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS
+Thumbs.db
+desktop.ini
+
+# Temporary files
+*.tmp
+*.cache
+*.bak
+
+# Database dumps
+*.sql.gz
+*.sql.zip
+/backups/
+
+# PHPUnit
+.phpunit.result.cache
+/phpunit.xml
+
+# Node (if used for frontend build)
+node_modules/
+package-lock.json

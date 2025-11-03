@@ -1,0 +1,16 @@
+{
+    "name": "netinventory/vulnerable-demo",
+    "description": "Network Inventory System - Vulnerable for Security Testing",
+    "type": "project",
+    "require": {
+        "php": ">=7.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "NetInventory\\": "src/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true
+    }
+}

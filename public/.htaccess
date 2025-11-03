@@ -1,0 +1,50 @@
+# Net Inventory - Apache Configuration
+
+# Redirect everything to index.php (if file doesn't exist)
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Set base path (adjust if needed)
+    RewriteBase /
+    
+    # Redirect to HTTPS (uncomment in production with SSL)
+    # RewriteCond %{HTTPS} off
+    # RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+    
+    # Don't rewrite files or directories
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    
+    # Rewrite everything else to index.php
+    RewriteRule ^(.*)$ index.php [L,QSA]
+</IfModule>
+
+# Disable directory listing
+Options -Indexes
+
+# Protect sensitive files
+<FilesMatch "(\.env|\.git|composer\.(json|lock)|\.md)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Security headers (some intentionally weak for vulnerable demo)
+<IfModule mod_headers.c>
+    # Intentionally permissive for demo
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    # XSS Protection disabled for demo
+    # Header set X-XSS-Protection "1; mode=block"
+    
+    # VULNERABLE: No CSP for demo purposes
+    # Header set Content-Security-Policy "default-src 'self'"
+</IfModule>
+
+# File upload restrictions (VULNERABLE: Intentionally permissive)
+# php_value upload_max_filesize 10M
+# php_value post_max_size 10M
+
+# Error handling (VULNERABLE: Shows errors for demo)
+php_flag display_errors On
+php_flag display_startup_errors On
+php_value error_reporting E_ALL

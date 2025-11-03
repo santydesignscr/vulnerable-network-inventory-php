@@ -1,0 +1,9 @@
+hostname,management_ip,device_type,vendor,model,serial,os_version,location,owner,notes
+sw-floor1-01,10.1.1.20,switch,Cisco,Catalyst 2960-X,FOC1234ABCD,15.2(7)E3,Sede Central,IT Department,Floor 1 access switch
+sw-floor2-01,10.1.1.21,switch,Cisco,Catalyst 2960-X,FOC1234ABCE,15.2(7)E3,Sede Central,IT Department,Floor 2 access switch
+rtr-wan-01,203.0.113.1,router,Cisco,ISR4321,FTX9876XYZ,16.9.4,Datacenter 1,NetOps,WAN edge router
+fw-dmz-01,192.168.200.1,firewall,Fortinet,FortiGate 60F,FG60F-123456,7.0.8,Datacenter 1,Security Team,DMZ firewall
+ap-lobby-01,10.2.1.100,ap,Ubiquiti,UniFi AP-AC-Lite,UAP-AC-001,5.43.23,Sede Central,Wireless Team,Lobby access point
+ap-cafeteria-01,10.2.1.101,ap,Ubiquiti,UniFi AP-AC-Lite,UAP-AC-002,5.43.23,Sede Central,Wireless Team,Cafeteria AP
+rtr-branch-s1,172.16.20.1,router,MikroTik,RB4011,RB4011-456789,7.6,Sucursal Sur,Branch Operations,Branch south router
+sw-server-01,10.0.1.10,switch,Cisco,Catalyst 9300,FCW2234A456,16.12.4,Datacenter 1,IT Department,Server rack switch
