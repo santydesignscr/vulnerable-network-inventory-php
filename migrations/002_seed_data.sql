@@ -64,12 +64,12 @@ INSERT INTO locations (name, parent_id, address, notes) VALUES
 -- Hash: $2y$10$YourHashHere (bcrypt) - In production use password_hash()
 -- ============================================================================
 INSERT INTO users (username, email, password_hash, role, full_name, is_active) VALUES
-('admin', 'admin@netinv.local', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 'Administrator', 1),
-('operator1', 'operator@netinv.local', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'operator', 'John Operator', 1),
-('viewer1', 'viewer@netinv.local', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'viewer', 'Jane Viewer', 1),
-('testuser', 'test@netinv.local', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'viewer', 'Test User', 1);
+('admin', 'admin@netinv.local', '$2y$10$B35U0iUbexELjir8SD/Ss.W0uFTenbvkPgTdXPEZ284lVvUxCsE8u', 'admin', 'Administrator', 1),
+('operator1', 'operator@netinv.local', '$2y$10$B35U0iUbexELjir8SD/Ss.W0uFTenbvkPgTdXPEZ284lVvUxCsE8u', 'operator', 'John Operator', 1),
+('viewer1', 'viewer@netinv.local', '$2y$10$B35U0iUbexELjir8SD/Ss.W0uFTenbvkPgTdXPEZ284lVvUxCsE8u', 'viewer', 'Jane Viewer', 1),
+('testuser', 'test@netinv.local', '$2y$10$B35U0iUbexELjir8SD/Ss.W0uFTenbvkPgTdXPEZ284lVvUxCsE8u', 'viewer', 'Test User', 1);
 
--- Note: Password "password123" hash = $2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi
+-- Note: Password "password123" hash = $2y$10$B35U0iUbexELjir8SD/Ss.W0uFTenbvkPgTdXPEZ284lVvUxCsE8u
 
 -- ============================================================================
 -- Sample Devices

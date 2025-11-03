@@ -46,17 +46,18 @@ class AuthController
     /**
      * Handle login
      * 
-     * VULNERABLE: SQL Injection via username and password fields
+     * VULNERABLE: SQL Injection via username field
+     * Note: Password verification now uses password_verify() with bcrypt hashes
      * 
      * Example exploits:
-     * Username: admin' OR '1'='1
-     * Password: anything
+     * Username: admin' OR '1'='1'--
+     * Password: anything (will fail password verification)
      * 
      * Username: admin'--
-     * Password: (empty)
+     * Password: (will bypass query but fail password check)
      * 
-     * Username: ' UNION SELECT 1,2,3,4,'admin',5,6,7,8,9--
-     * Password: anything
+     * Username: ' UNION SELECT 1,'admin','$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi','admin','Admin',6,7,8,9--
+     * Password: password123 (may work with crafted hash)
      */
     public function login()
     {
@@ -69,19 +70,17 @@ class AuthController
         $password = $_POST['password'] ?? '';
         
         // VULNERABLE: SQL Injection - Direct string concatenation
-        $query = "SELECT * FROM users WHERE username = '{$username}' AND password_hash = '{$password}'";
-        
-        // Alternative vulnerable query (commented for different test scenarios)
-        // $query = "SELECT * FROM users WHERE username = '{$username}' LIMIT 1";
+        // Modified to fetch user first and then verify password
+        $query = "SELECT * FROM users WHERE username = '{$username}' LIMIT 1";
         
         try {
             // VULNERABLE: Executing unsanitized query
             $stmt = $this->db->query($query);
             $user = $stmt->fetch();
             
-            if ($user) {
-                // VULNERABLE: No proper password verification
-                // In reality, should use password_verify()
+            // Verify password using password_verify() against bcrypt hash
+            if ($user && password_verify($password, $user['password_hash'])) {
+                // Password is correct
                 
                 $this->app->setCurrentUser([
                     'id' => $user['id'],
@@ -145,8 +144,8 @@ class AuthController
         $password = $_POST['password'] ?? '';
         $fullName = $_POST['full_name'] ?? '';
         
-        // VULNERABLE: Weak password hashing (MD5)
-        $passwordHash = md5($password);
+        // Use bcrypt for password hashing (same as seed data)
+        $passwordHash = password_hash($password, PASSWORD_BCRYPT);
         
         // VULNERABLE: SQL Injection in INSERT
         $query = "INSERT INTO users (username, email, password_hash, role, full_name) 
